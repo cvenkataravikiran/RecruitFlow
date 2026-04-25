@@ -80,7 +80,7 @@ See [SETUP.md](SETUP.md) for detailed installation instructions.
 
 ```bash
 # Clone repository
-git clone https://github.com/YOUR_USERNAME/recruitflow.git
+https://github.com/cvenkataravikiran/RecruitFlow.git
 cd recruitflow
 
 # Install dependencies
