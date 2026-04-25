@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}Scheduled Interviews - RecruitFlow{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="mb-4">Scheduled Interviews</h1>
+    
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Candidate</th>
+                            <th>Job</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Mode</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for interview in interviews %}
+                        <tr>
+                            <td>{{ interview.application.candidate.full_name }}</td>
+                            <td>{{ interview.application.job.title }}</td>
+                            <td>{{ interview.date }}</td>
+                            <td>{{ interview.time }}</td>
+                            <td><span class="badge bg-info">{{ interview.get_mode_display }}</span></td>
+                            <td>
+                                <a href="{% url 'applications:candidate_detail' interview.application.id %}" class="btn btn-sm btn-outline-primary">View Candidate</a>
+                                {% if interview.mode == 'online' and interview.meeting_link %}
+                                <a href="{{ interview.meeting_link }}" target="_blank" class="btn btn-sm btn-outline-success">Join Meeting</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center">No interviews scheduled yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}My Interviews - RecruitFlow{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="mb-4">My Scheduled Interviews</h1>
+    
+    <div class="row">
+        {% for interview in interviews %}
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">{{ interview.application.job.title }}</h5>
+                    <p class="text-muted">{{ interview.application.job.company }}</p>
+                    <hr>
+                    <p><i class="bi bi-calendar"></i> <strong>Date:</strong> {{ interview.date }}</p>
+                    <p><i class="bi bi-clock"></i> <strong>Time:</strong> {{ interview.time }}</p>
+                    <p><i class="bi bi-laptop"></i> <strong>Mode:</strong> 
+                        <span class="badge bg-info">{{ interview.get_mode_display }}</span>
+                    </p>
+                    {% if interview.mode == 'online' and interview.meeting_link %}
+                    <p><i class="bi bi-link"></i> <strong>Meeting Link:</strong> 
+                        <a href="{{ interview.meeting_link }}" target="_blank">Join Meeting</a>
+                    </p>
+                    {% endif %}
+                    {% if interview.notes %}
+                    <p><i class="bi bi-sticky"></i> <strong>Notes:</strong></p>
+                    <p>{{ interview.notes|linebreaks }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info">No interviews scheduled yet.</div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

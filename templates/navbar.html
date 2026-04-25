@@ -1,0 +1,260 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm fixed-top">
+    <div class="container">
+        {% if user.is_authenticated %}
+            {% if user.candidate_profile %}
+                <a class="navbar-brand fw-bold" href="{% url 'dashboard:candidate_dashboard' %}">
+                    <i class="bi bi-briefcase-fill"></i> RecruitFlow
+                </a>
+            {% elif user.recruiter_profile %}
+                <a class="navbar-brand fw-bold" href="{% url 'dashboard:recruiter_dashboard' %}">
+                    <i class="bi bi-briefcase-fill"></i> RecruitFlow
+                </a>
+            {% else %}
+                <a class="navbar-brand fw-bold" href="{% url 'home' %}">
+                    <i class="bi bi-briefcase-fill"></i> RecruitFlow
+                </a>
+            {% endif %}
+        {% else %}
+            <a class="navbar-brand fw-bold" href="{% url 'home' %}">
+                <i class="bi bi-briefcase-fill"></i> RecruitFlow
+            </a>
+        {% endif %}
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto align-items-lg-center">
+                {% if not user.is_authenticated %}
+                    <!-- Public Navigation (Only for guests) -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'home' %}">
+                            <i class="bi bi-house-door"></i> Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'jobs:job_list' %}">
+                            <i class="bi bi-search"></i> Browse Jobs
+                        </a>
+                    </li>
+                {% endif %}
+                
+                {% if user.is_authenticated %}
+                    <!-- CANDIDATE NAVIGATION -->
+                    {% if user.candidate_profile %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="candidateJobsDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-briefcase"></i> Jobs
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'jobs:job_list' %}">
+                                <i class="bi bi-search"></i> Search Jobs
+                            </a></li>
+                            <li><a class="dropdown-item" href="{% url 'applications:my_applications' %}">
+                                <i class="bi bi-file-earmark-text"></i> My Applications
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'applications:my_applications' %}?status=shortlisted">
+                                <i class="bi bi-star"></i> Shortlisted
+                            </a></li>
+                            <li><a class="dropdown-item" href="{% url 'applications:my_applications' %}?status=interview_scheduled">
+                                <i class="bi bi-calendar-check"></i> Interview Scheduled
+                            </a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'interviews:my_interviews' %}">
+                            <i class="bi bi-calendar-event"></i> Interviews
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'dashboard:candidate_dashboard' %}">
+                            <i class="bi bi-speedometer2"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle position-relative" href="#" id="candidateNotificationsDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-bell"></i>
+                            {% if unread_notifications_count > 0 %}
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                {{ unread_notifications_count }}
+                            </span>
+                            {% endif %}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" style="min-width: 300px;">
+                            <li><h6 class="dropdown-header">Notifications</h6></li>
+                            {% if recent_notifications %}
+                                {% for notification in recent_notifications %}
+                                <li>
+                                    <a class="dropdown-item {% if not notification.is_read %}bg-light{% endif %}" href="#">
+                                        <small class="text-muted d-block">{{ notification.created_at|timesince }} ago</small>
+                                        {{ notification.message|truncatewords:15 }}
+                                    </a>
+                                </li>
+                                {% endfor %}
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-center text-primary" href="#">View All Notifications</a></li>
+                            {% else %}
+                                <li><a class="dropdown-item text-muted">No notifications</a></li>
+                            {% endif %}
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="candidateAccountDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle"></i> Account
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{% url 'accounts:profile' %}">
+                                <i class="bi bi-person"></i> My Profile
+                            </a></li>
+                            <li><a class="dropdown-item" href="{% url 'accounts:profile' %}">
+                                <i class="bi bi-file-earmark-arrow-up"></i> Update Resume
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-muted small">
+                                <i class="bi bi-envelope"></i> {{ user.email }}
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="{% url 'accounts:logout' %}">
+                                <i class="bi bi-box-arrow-right"></i> Logout
+                            </a></li>
+                        </ul>
+                    </li>
+                    
+                    <!-- RECRUITER NAVIGATION -->
+                    {% elif user.recruiter_profile %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="recruiterJobsDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-briefcase"></i> Jobs
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'jobs:job_create' %}">
+                                <i class="bi bi-plus-circle"></i> Post New Job
+                            </a></li>
+                            <li><a class="dropdown-item" href="{% url 'dashboard:recruiter_dashboard' %}">
+                                <i class="bi bi-list-ul"></i> Manage Jobs
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'jobs:job_list' %}">
+                                <i class="bi bi-eye"></i> View All Jobs
+                            </a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="recruiterApplicantsDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-people"></i> Applicants
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'dashboard:recruiter_dashboard' %}">
+                                <i class="bi bi-person-lines-fill"></i> All Applicants
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><h6 class="dropdown-header">Filter by Status</h6></li>
+                            <li><a class="dropdown-item" href="{% url 'dashboard:recruiter_dashboard' %}">
+                                <i class="bi bi-circle-fill text-primary" style="font-size: 8px;"></i> New Applications
+                            </a></li>
+                            <li><a class="dropdown-item" href="{% url 'dashboard:recruiter_dashboard' %}">
+                                <i class="bi bi-circle-fill text-warning" style="font-size: 8px;"></i> Shortlisted
+                            </a></li>
+                            <li><a class="dropdown-item" href="{% url 'dashboard:recruiter_dashboard' %}">
+                                <i class="bi bi-circle-fill text-info" style="font-size: 8px;"></i> Interview Scheduled
+                            </a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'interviews:recruiter_interviews' %}">
+                            <i class="bi bi-calendar-event"></i> Interviews
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'dashboard:recruiter_dashboard' %}">
+                            <i class="bi bi-speedometer2"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle position-relative" href="#" id="recruiterNotificationsDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-bell"></i>
+                            {% if unread_notifications_count > 0 %}
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                {{ unread_notifications_count }}
+                            </span>
+                            {% endif %}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" style="min-width: 300px;">
+                            <li><h6 class="dropdown-header">Notifications</h6></li>
+                            {% if recent_notifications %}
+                                {% for notification in recent_notifications %}
+                                <li>
+                                    <a class="dropdown-item {% if not notification.is_read %}bg-light{% endif %}" href="#">
+                                        <small class="text-muted d-block">{{ notification.created_at|timesince }} ago</small>
+                                        {{ notification.message|truncatewords:15 }}
+                                    </a>
+                                </li>
+                                {% endfor %}
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-center text-primary" href="#">View All Notifications</a></li>
+                            {% else %}
+                                <li><a class="dropdown-item text-muted">No notifications</a></li>
+                            {% endif %}
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="recruiterAccountDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-building"></i> Company
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{% url 'accounts:profile' %}">
+                                <i class="bi bi-building"></i> Company Profile
+                            </a></li>
+                            <li><a class="dropdown-item" href="{% url 'accounts:profile' %}">
+                                <i class="bi bi-image"></i> Update Logo
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-muted small">
+                                <i class="bi bi-envelope"></i> {{ user.email }}
+                            </a></li>
+                            <li><a class="dropdown-item text-muted small">
+                                <i class="bi bi-building"></i> {{ user.recruiter_profile.company_name }}
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="{% url 'accounts:logout' %}">
+                                <i class="bi bi-box-arrow-right"></i> Logout
+                            </a></li>
+                        </ul>
+                    </li>
+                    
+                    <!-- ADMIN NAVIGATION -->
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/">
+                            <i class="bi bi-shield-lock"></i> Admin Panel
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'accounts:profile' %}">
+                            <i class="bi bi-person"></i> Profile
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-warning" href="{% url 'accounts:logout' %}">
+                            <i class="bi bi-box-arrow-right"></i> Logout
+                        </a>
+                    </li>
+                    {% endif %}
+                    
+                {% else %}
+                    <!-- GUEST NAVIGATION -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'accounts:login' %}">
+                            <i class="bi bi-box-arrow-in-right"></i> Login
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'accounts:register' %}">
+                            <i class="bi bi-person-plus"></i> Register
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
