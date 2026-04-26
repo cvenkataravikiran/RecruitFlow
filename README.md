@@ -195,6 +195,5 @@ This project is licensed under the MIT License.
 
 ## 🔗 Links
 
-- **Live Demo:** [Coming Soon]
 - **Documentation:** [SETUP.md](SETUP.md)
-- **Issues:** [GitHub Issues](https://github.com/YOUR_USERNAME/recruitflow/issues)
+- **Issues:** [GitHub Issues](https://github.com/cvenkataravikiran/RecruitFlow.git/issues)
